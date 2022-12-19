@@ -1,4 +1,13 @@
-import { h, render, useState } from "../../src/index"
+import {
+  h,
+  render,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "../../src/index";
+import "./index.css";
 // import {h, render} from '../../.ignore/eee'
 
 // function App() {
@@ -49,15 +58,68 @@ import { h, render, useState } from "../../src/index"
 // }
 
 const App = () => {
-  let [bool, setbool] = useState(true)
-  return <div>
-      {bool ? <Header /> : null}
-      <button onClick={()=>setbool(!bool)}>x</button>
-  </div>
-}
+  let [bool, setbool] = useState(true);
+  let [list, setList] = useState([1]);
+  console.log("againList", list);
+  let ref = useRef({ nowIndex: 0, maxIndex: 1000 });
 
-function Header(){
-  return <div><a href="">222</a></div>
+  useEffect(() => {
+    console.log(123);
+  }, []);
+  const timeSliceSetList = (preList) => {
+    const { nowIndex, maxIndex } = ref.current;
+    if (nowIndex > maxIndex) return;
+    let nowTime = 0;
+    let newList = preList || [...list];
+    console.log("list:", list);
+    while (nowTime < 50) {
+      newList.push(nowTime);
+      nowTime++;
+    }
+    ref.current = { nowIndex: nowIndex + nowTime, maxIndex: 1000 };
+    setList(newList);
+    console.log("afterSetList");
+    requestIdleCallback(timeSliceSetList.bind(null, newList));
+  };
+  return (
+    <div>
+      {useMemo(
+        () => (
+          <Header />
+        ),
+        []
+      )}
+      {/* css动画小球 */}
+      <div class="ball" />
+      <button
+        onClick={() => {
+          // setbool(!bool);
+          const list = new Array(1000);
+          // setList(new Array(200000).fill(1));
+          timeSliceSetList();
+        }}
+      >
+        x
+      </button>
+      <div style="position:relative;width:100%">
+        {list.map(() => (
+          <div
+            class="circle"
+            style="float:left;background:rgba(1,1,1,0.5);width:10px;height:10px"
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+function Header() {
+  console.log("Header render");
+  return (
+    <div>
+      <a href="">222</a>
+    </div>
+  );
 }
 
 // function App() {
@@ -107,4 +169,4 @@ function Header(){
 
 // render(<div><li key={3}>3</li><li key={2}>2</li><li key={1}>1</li></div>, parentNode);
 
-render(<App />, document.getElementById("app"))
+render(<App />, document.getElementById("app"));
