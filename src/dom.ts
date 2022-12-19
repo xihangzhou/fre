@@ -14,6 +14,7 @@ const jointIter = <P extends Attributes>(
   Object.keys(bProps).forEach(k => !aProps.hasOwnProperty(k) && callback(k,undefined, bProps[k])) 
 }
 
+// 传入一个dom节点，a为老props, b为新的props，然后对比更新
 export const updateElement = <P extends Attributes>(
   dom: DOM,
   aProps: P,

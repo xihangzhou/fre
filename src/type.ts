@@ -40,27 +40,33 @@ export type IRef = (
   e: HTMLElement | undefined
 ) => void | { current?: HTMLElement }
 
+// IFiber节点，这个节点在fre中是由对应的freEle节点扩展来的，所以自带了对应freEle上的所有属性
 export interface IFiber<P extends Attributes = any> {
-  key?: string
-  type: string | FC<P>
-  parentNode: HTMLElementEx
-  childNodes: any
-  node: HTMLElementEx
-  kids?: any
-  parent?: IFiber<P>
-  sibling?: IFiber<P>
-  child?: IFiber<P>
+  key?: string // 和freEle一样，来自freEle
+  type: string | FC<P> // 和freEle一样，来自freEle
+  parentNode: HTMLElementEx // 父DOM节点
+  childNodes: any // 把一个fiber节点对应的DOM节点的childNodes属性挂载到fiber上，对于DOM孩子节点
+  node: HTMLElementEx // 一个fiber节点对应的DOM节点
+  // 一个fiber节点的孩子freEle节点，如果这个fiber节点是函数节点，那么这个节点的kids是函数节点运行的返回值
+  // 主意这个kids代表的是当前视图对应的孩子freEle节点
+  kids?: any 
+  parent?: IFiber<P> // 一个fiber节点的父fiber节点
+  sibling?: IFiber<P> // 一个fiber节点的兄弟fiber节点
+  child?: IFiber<P> // 一个fiber节点的第一个子fiber节点
   done?: () => void
-  ref: IRef
+  ref: IRef // 和freEle一样，来自freEle
   hooks: IHook
-  oldProps: P
-  after: any
-  props: P
+  oldProps: P // 上次的老的pros属性
+  after: any // 上一次渲染的DOM节点
+  // 和freEle一样，来自freEle,其中有标签上的属性比如href,src,onClick等等
+  // 注意会有一个children属性是在h的时候从参数添加的(如果是fiberRoot是在render方法中添加的)，是对应freEle节点的孩子freELe节点
+  // 并且这个props上的children属性是运行了h函数的最新的fiber
+  props: P 
   lane: number
   time: number
-  next: IFiber
+  next: IFiber // 指向下一个需要commit DOM更新的fiber节点
   dirty: boolean
-  isComp: boolean
+  isComp: boolean // freEle是否是函数组件
 }
 
 export type HTMLElementEx = HTMLElement & { last: IFiber | null }
